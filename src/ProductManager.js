@@ -23,9 +23,9 @@ class ProductManager {
         });
 
         if(findedProducts.length === 0) {
-            console.log('No products added yet');
+            return 'No products added yet';
         } else{
-            console.log(findedProducts);
+            return findedProducts;
         }
     }
 
@@ -47,12 +47,12 @@ class ProductManager {
         })
 
         if (codes.includes(new_product.code)) {
-            console.log("This code already exists, it can't be added to the Products Array");
+            return "This code already exists, it can't be added to the Products Array";
         } else {
             ProductManager.last_id = ProductManager.last_id +1;
             this.products.push(new_product);
             await fs.promises.writeFile(this.path, JSON.stringify(this.products));
-            console.log('Products file updated');
+            return 'Products file updated';
         }
     }
 
@@ -64,9 +64,9 @@ class ProductManager {
         });
 
         if (index !== -1) {
-            console.log(parsedList[index]);
+            return parsedList[index];
         } else {
-            console.log("Can't find the product. This id does not exist");
+            return "Can't find the product. This id does not exist";
         }
     }
 
@@ -80,9 +80,9 @@ class ProductManager {
         if (index !== -1) {
             parsedList[index] = object;
             await fs.promises.writeFile(this.path, JSON.stringify(parsedList))
-            console.log("Product Updated")
+            return "Product Updated";
         } else {
-            console.log("Can't update the product. This id does not exist");
+            return "Can't update the product. This id does not exist";
         }
     }
 
@@ -96,9 +96,9 @@ class ProductManager {
         if (index !== -1) {
             parsedList.splice(index, 1);
             await fs.promises.writeFile(this.path, JSON.stringify(parsedList))
-            console.log("Product Deleted")
+            return "Product Deleted"
         } else {
-            console.log("Can't delete the product. This id does not exist");
+            return "Can't delete the product. This id does not exist";
         }
     }
 
