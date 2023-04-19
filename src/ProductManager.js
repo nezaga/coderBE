@@ -4,7 +4,7 @@ class ProductManager {
     static last_id = 0;
     constructor (path) {
         this.path = '../'+path;
-        this.products = [];
+        //this.products = [];
     }
 
     getProducts = async (limit) => {
@@ -29,20 +29,25 @@ class ProductManager {
         }
     }
 
-    addProduct = async(title, description, price, thumbnail, code, stock) => {
+    addProduct = async(object) => {
         const new_product = {
             id: ProductManager.last_id,
-            title: title,
-            description: description,
-            price: price,
-            thumbnail: thumbnail,
-            code: code,
-            stock: stock
+            title: object.title,
+            description: object.description,
+            code: object.code,
+            price: object.price,
+            status: true,
+            stock: object.stock,
+            category: object.category,
+            thumbnails: object.thumbnails
         }
 
         let codes = [];
         
-        this.products.map(product => {
+        const productsList = await fs.promises.readFile(this.path, 'utf-8');
+        const parsedList = JSON.parse(productsList);
+
+        parsedList.map(product => {
             codes.push(product.code);
         })
 
@@ -50,8 +55,8 @@ class ProductManager {
             return "This code already exists, it can't be added to the Products Array";
         } else {
             ProductManager.last_id = ProductManager.last_id +1;
-            this.products.push(new_product);
-            await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+            parsedList.push(new_product);
+            await fs.promises.writeFile(this.path, JSON.stringify(parsedList));
             return 'Products file updated';
         }
     }

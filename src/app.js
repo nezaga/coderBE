@@ -1,17 +1,10 @@
 const express = require('express')
-const ProductManager = require('./ProductManager')
+const router = require('./routes/products_routes');
 
 const app = express();
-
-const pm = new ProductManager('Products.json');
-    
-app.get('/products', async (req, res)=>{
-    res.json(await pm.getProducts(req.query.limit))
-})
-
-app.get('/products/:pid', async (req, res)=>{
-    res.json(await pm.getProductById(req.params.pid))
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use('/api', router);
 
 app.listen(8080, () => {
     console.log('Executing in Port 8080');
