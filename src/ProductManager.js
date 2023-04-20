@@ -1,11 +1,32 @@
 const fs = require('fs');
 
 class ProductManager {
-    static last_id = 0;
     constructor (path) {
         this.path = '../'+path;
-        //this.products = [];
     }
+
+    checkProductExistance = async (id) => {
+        const productsList = await fs.promises.readFile(this.path, 'utf-8');
+        const parsedList = JSON.parse(productsList);
+        const index = parsedList.findIndex(product => {
+            return product.id == id;
+        });
+
+        if (index !== -1) {
+            return true;
+        } else {
+            return false ;
+        }
+    }
+
+    validateFields(fields) {
+        const validFields = ["title", "description", "code", "price", "status", "stock", "category", "thumbnails"];
+        for (const field in fields) {
+            if (!validFields.includes(field)) {
+            return false;
+        }}
+        return true;
+        }
 
     getProducts = async (limit) => {
         const productsList = await fs.promises.readFile(this.path, 'utf-8');
@@ -30,8 +51,15 @@ class ProductManager {
     }
 
     addProduct = async(object) => {
+        const productsList = await fs.promises.readFile(this.path, 'utf-8');
+        const parsedList = JSON.parse(productsList);
+        
+        const lastProduct = parsedList[parsedList.length - 1];
+        const lastId = lastProduct ? lastProduct.id : 0;
+        const newId = lastId + 1;
+
         const new_product = {
-            id: ProductManager.last_id,
+            id: newId,
             title: object.title,
             description: object.description,
             code: object.code,
@@ -44,8 +72,7 @@ class ProductManager {
 
         let codes = [];
         
-        const productsList = await fs.promises.readFile(this.path, 'utf-8');
-        const parsedList = JSON.parse(productsList);
+
 
         parsedList.map(product => {
             codes.push(product.code);
@@ -54,7 +81,6 @@ class ProductManager {
         if (codes.includes(new_product.code)) {
             return "This code already exists, it can't be added to the Products Array";
         } else {
-            ProductManager.last_id = ProductManager.last_id +1;
             parsedList.push(new_product);
             await fs.promises.writeFile(this.path, JSON.stringify(parsedList));
             return 'Products file updated';
@@ -75,20 +101,21 @@ class ProductManager {
         }
     }
 
-    updateProduct = async(object) => {
+    updateProduct = async(id, updatedFields) => {
         const productsList = await fs.promises.readFile(this.path, 'utf-8');
         const parsedList = JSON.parse(productsList);
-        const index = parsedList.findIndex(product => {
-            return product.id === object.id;
-        });
-
-        if (index !== -1) {
-            parsedList[index] = object;
-            await fs.promises.writeFile(this.path, JSON.stringify(parsedList))
-            return "Product Updated";
-        } else {
-            return "Can't update the product. This id does not exist";
+        
+        if (!parsedList[id]) {
+            return { error: "Can't update the product. This id does not exist" };
         }
+        
+        if (!this.validateFields(updatedFields)) {
+            return { error: "Campo inválido" };
+        }
+
+        Object.assign(parsedList[id], updatedFields);
+        await fs.promises.writeFile(this.path, JSON.stringify(parsedList))
+        return "Product Updated";
     }
 
     deleteProduct = async(id) => {
