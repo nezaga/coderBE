@@ -21,7 +21,7 @@ router.post('/products', async (req, res) => {
     }
 });
 
-router.put('/:pid', async (req, res) => {
+router.put('/products/:pid', async (req, res) => {
     const id = parseInt(req.params.pid);
     const updatedFields = req.body;
 
@@ -29,7 +29,7 @@ router.put('/:pid', async (req, res) => {
 });
 
 
-router.delete('/:pid', async (req, res) => {
+router.delete('/products/:pid', async (req, res) => {
     if (req.params.pid !== undefined) {
         const id = parseInt(req.params.pid)
         res.json(await pm.deleteProduct(id))
