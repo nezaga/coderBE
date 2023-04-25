@@ -20,7 +20,7 @@ class CartManager {
 
         parsedList.push(new_cart);
         await fs.promises.writeFile(this.path, JSON.stringify(parsedList));
-        return 'Cart created';
+        return `Cart '${newId}' created`;
     }
 
     getCartById = async(id) => {
